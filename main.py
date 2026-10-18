@@ -35,18 +35,31 @@ def view_entries():
         print(f"{e['id']:<4}{e['type']:<10}{e['priority']:<10}{e['status']:<10}{e['title']}")
 
 
+def show_statistics():
+    """Display summary statistics."""
+    print("\n--- Summary Statistics ---")
+    print(f"Total entries:     {len(entries)}")
+    print(f"Bugs:              {sum(e['type'] == 'Bug' for e in entries)}")
+    print(f"Feature requests:  {sum(e['type'] == 'Feature' for e in entries)}")
+    print(f"Open entries:      {sum(e['status'] == 'Open' for e in entries)}")
+    print(f"Resolved entries:  {sum(e['status'] == 'Resolved' for e in entries)}")
+
+
 def main():
     """Show the menu and run the chosen option."""
     while True:
         print("\n=== Bug & Feature Tracker ===")
         print("1. Add an entry")
         print("2. View all entries")
+        print("3. View summary statistics")
         print("4. Exit")
         choice = input("Choose an option: ")
         if choice == "1":
             add_entry()
         elif choice == "2":
             view_entries()
+        elif choice == "3":
+            show_statistics()
         elif choice == "4":
             print("Goodbye!")
             break
@@ -54,3 +67,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

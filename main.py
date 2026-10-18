@@ -1,15 +1,50 @@
-"""Bug & Feature Tracker - a simple terminal application."""
+"""Bug & Feature Tracker - a simple terminal application.
+
+Records bugs and feature requests in memory, lists them,
+and shows summary statistics.
+"""
+
+VALID_TYPES = ("Bug", "Feature")
+VALID_PRIORITIES = ("Low", "Medium", "High")
+VALID_STATUSES = ("Open", "Resolved")
 
 entries = []
 
 
+def read_title():
+    """Ask for a non-empty title; return None if the user leaves it empty."""
+    title = input("Title / short description: ").strip()
+    if not title:
+        print("Error: the title cannot be empty.")
+        return None
+    return title
+
+
+def read_choice(prompt, options):
+    """Ask the user to pick one of `options` (case-insensitive)."""
+    lookup = {option.lower(): option for option in options}
+    answer = input(f"{prompt} ({'/'.join(options)}): ").strip().lower()
+    if answer not in lookup:
+        print(f"Error: please enter one of: {', '.join(options)}.")
+        return None
+    return lookup[answer]
+
+
 def add_entry():
-    """Add a new bug or feature request."""
+    """Feature 1: add a new bug or feature request."""
     print("\n--- Add Entry ---")
-    title = input("Title / short description: ")
-    entry_type = input("Type (Bug/Feature): ")
-    priority = input("Priority (Low/Medium/High): ")
-    status = input("Status (Open/Resolved): ")
+    title = read_title()
+    if title is None:
+        return
+    entry_type = read_choice("Type", VALID_TYPES)
+    if entry_type is None:
+        return
+    priority = read_choice("Priority", VALID_PRIORITIES)
+    if priority is None:
+        return
+    status = read_choice("Status", VALID_STATUSES)
+    if status is None:
+        return
 
     entries.append(
         {
@@ -24,7 +59,7 @@ def add_entry():
 
 
 def view_entries():
-    """Display all entries in a readable table."""
+    """Feature 2: display all entries in a readable table."""
     print("\n--- All Entries ---")
     if not entries:
         print("No entries recorded yet.")
@@ -36,7 +71,7 @@ def view_entries():
 
 
 def show_statistics():
-    """Display summary statistics."""
+    """Feature 3: display summary statistics."""
     print("\n--- Summary Statistics ---")
     print(f"Total entries:     {len(entries)}")
     print(f"Bugs:              {sum(e['type'] == 'Bug' for e in entries)}")
@@ -46,25 +81,28 @@ def show_statistics():
 
 
 def main():
-    """Show the menu and run the chosen option."""
+    """Feature 4: menu and navigation loop."""
+    actions = {"1": add_entry, "2": view_entries, "3": show_statistics}
     while True:
         print("\n=== Bug & Feature Tracker ===")
         print("1. Add an entry")
         print("2. View all entries")
         print("3. View summary statistics")
         print("4. Exit")
-        choice = input("Choose an option: ")
-        if choice == "1":
-            add_entry()
-        elif choice == "2":
-            view_entries()
-        elif choice == "3":
-            show_statistics()
-        elif choice == "4":
+        choice = input("Choose an option (1-4): ").strip()
+        if choice == "4":
             print("Goodbye!")
             break
+        action = actions.get(choice)
+        if action is None:
+            print("Invalid choice. Please enter a number from 1 to 4.")
+        else:
+            action()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (KeyboardInterrupt, EOFError):
+        print("\nGoodbye!")
 
